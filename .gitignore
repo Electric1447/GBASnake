@@ -1,0 +1,6 @@
+*.d
+*.o
+*.gba
+*.elf
+*.sav
+build
