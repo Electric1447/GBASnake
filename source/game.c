@@ -39,49 +39,48 @@ int getFinalScore() {
 void tickGame() {
 	// Check for lose conditions
 	if (snake.head.x > NUM_CELLS_X - 1 || snake.head.x < 0 || snake.head.y > NUM_CELLS_Y - 1 || snake.head.y < 0 ) {
-        gameState = STATE_LOST;
-        return;
-    }
+		gameState = STATE_LOST;
+		return;
+	}
 
-    // Check for win conditions
-    if (snake.length == NUM_CELLS_Y * NUM_CELLS_X) {
-        gameState = STATE_WON;
-        return;
-    }
-	
+	// Check for win conditions
+	if (snake.length == NUM_CELLS_Y * NUM_CELLS_X) {
+		gameState = STATE_WON;
+		return;
+	}
+
 	if (gameTick > GAME_SPEED)
 		gameTick = 0;
-	
+
 	if (gameTick / GAME_SPEED)
 		drawGame();
-	
+
 	gameTick++;
 }
 
 void drawGame() {
-    if (snake.head.x == targetNode.x && snake.head.y == targetNode.y) {
-        AddNode(&snake);
-        spawnTargetNode();
-    }
+	if (snake.head.x == targetNode.x && snake.head.y == targetNode.y) {
+		AddNode(&snake);
+		spawnTargetNode();
+	}
 
-    //clear the tail cell, it's the only part of
-    //the grid that needs to clear
-    drawRect2(gridStartX + snake.tail->x * SIZE_CELL, gridStartY + snake.tail->y * SIZE_CELL, SIZE_CELL, SIZE_CELL, COL_BG);
+	// Clear the tail cell, it's the only part of the grid that needs to clear
+	drawRect2(gridStartX + snake.tail->x * SIZE_CELL, gridStartY + snake.tail->y * SIZE_CELL, SIZE_CELL, SIZE_CELL, COL_BG);
 
-    setCellValue(snake.tail->x, snake.tail->y, 0);
+	setCellValue(snake.tail->x, snake.tail->y, 0);
 
 	if (snake.length > 1)
 		drawRect2(gridStartX + snake.head.x * SIZE_CELL, gridStartY + snake.head.y * SIZE_CELL, SIZE_CELL, SIZE_CELL, COL_SNAKE);
 
-    if (!UpdateSnake(&snake)) {
-        gameState = STATE_LOST;
-        return;
-    }
+	if (!UpdateSnake(&snake)) {
+		gameState = STATE_LOST;
+		return;
+	}
 
-    drawRect2(gridStartX + snake.head.x * SIZE_CELL, gridStartY + snake.head.y * SIZE_CELL, SIZE_CELL, SIZE_CELL, COL_SNAKE_HEAD);
+	drawRect2(gridStartX + snake.head.x * SIZE_CELL, gridStartY + snake.head.y * SIZE_CELL, SIZE_CELL, SIZE_CELL, COL_SNAKE_HEAD);
 
-    setCellValue(snake.head.x, snake.head.y, 1);
-	
+	setCellValue(snake.head.x, snake.head.y, 1);
+
 	// Score
 	char score[5];
 	sprintf(score, "%d", snake.length);
@@ -94,23 +93,23 @@ void renderGame() {
 }
 
 void restartGame() {
-    gameState = STATE_PLAYING;
+	gameState = STATE_PLAYING;
 	gameState = 0;
-    srand(time(NULL));
-    memset(&grid[0], 0, sizeof(u8) * NUM_CELLS_Y * NUM_CELLS_X);
+	srand(time(NULL));
+	memset(&grid[0], 0, sizeof(u8) * NUM_CELLS_Y * NUM_CELLS_X);
 
-    int snakeStartX = NUM_CELLS_X / 2 - 1;
+	int snakeStartX = NUM_CELLS_X / 2 - 1;
 	int snakeStartY = NUM_CELLS_Y / 2 - 1;
 	InitSnake(&snake, snakeStartX, snakeStartY, NUM_CELLS_Y * NUM_CELLS_X);
 
-    drawRect2(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, COL_BG); // Clear screen
+	drawRect2(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, COL_BG); // Clear screen
 
-    //redraw frame
-    drawRect2(0,                         SIZE_PADDING_TOP, SCREEN_WIDTH, SIZE_FRAME,                       COL_FRAME);
-    drawRect2(0,               SCREEN_HEIGHT - SIZE_FRAME, SCREEN_WIDTH, SIZE_FRAME,                       COL_FRAME);
-    drawRect2(0,                         SIZE_PADDING_TOP, SIZE_FRAME,   SCREEN_HEIGHT - SIZE_PADDING_TOP, COL_FRAME);
-    drawRect2(SCREEN_WIDTH - SIZE_FRAME, SIZE_PADDING_TOP, SIZE_FRAME,   SCREEN_HEIGHT - SIZE_PADDING_TOP, COL_FRAME);
-    spawnTargetNode();
+	// Draw frame
+	drawRect2(0,                         SIZE_PADDING_TOP, SCREEN_WIDTH, SIZE_FRAME,                       COL_FRAME);
+	drawRect2(0,               SCREEN_HEIGHT - SIZE_FRAME, SCREEN_WIDTH, SIZE_FRAME,                       COL_FRAME);
+	drawRect2(0,                         SIZE_PADDING_TOP, SIZE_FRAME,   SCREEN_HEIGHT - SIZE_PADDING_TOP, COL_FRAME);
+	drawRect2(SCREEN_WIDTH - SIZE_FRAME, SIZE_PADDING_TOP, SIZE_FRAME,   SCREEN_HEIGHT - SIZE_PADDING_TOP, COL_FRAME);
+	spawnTargetNode();
 }
 
 void spawnTargetNode() {
@@ -124,25 +123,25 @@ void spawnTargetNode() {
 			lastR = r;
 		}
 	}
-	
+
 	targetNode.x = tX;
 	targetNode.y = tY;
 
-    drawRect2(gridStartX + tX * SIZE_CELL, gridStartY + tY * SIZE_CELL, SIZE_CELL, SIZE_CELL, COL_APPLE);
+	drawRect2(gridStartX + tX * SIZE_CELL, gridStartY + tY * SIZE_CELL, SIZE_CELL, SIZE_CELL, COL_APPLE);
 }
 
 void handleGameInput() {
 	u16 key_down = keysDown();
-	
+
 	if      (gameState == STATE_PLAYING && key_down & KEY_START) gameState = STATE_PAUSED;
 	else if (gameState == STATE_PAUSED  && key_down & KEY_START) gameState = STATE_PLAYING;
-	
+
 	if (gameState == STATE_PAUSED)
 		return;
-	
+
 	if      (key_down & KEY_RIGHT) UpdateVelocityX(&snake, SNAKE_RIGHT);
 	else if (key_down & KEY_LEFT ) UpdateVelocityX(&snake, SNAKE_LEFT );
-	
+
 	if      (key_down & KEY_UP   ) UpdateVelocityY(&snake, SNAKE_UP   );
 	else if (key_down & KEY_DOWN ) UpdateVelocityY(&snake, SNAKE_DOWN );
 }

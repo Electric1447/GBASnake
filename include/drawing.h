@@ -24,7 +24,7 @@
 
 
 inline void drawPixel (int x, int y, u16 clr) {
-    vid_mem[y * SCREEN_WIDTH + x] = clr;
+	vid_mem[y * SCREEN_WIDTH + x] = clr;
 }
 
 void drawRect(int x1, int y1, int x2, int y2, u16 clr);

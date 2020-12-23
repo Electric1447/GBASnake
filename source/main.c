@@ -13,10 +13,10 @@ u8 AppState = STATE_TITLE;
 
 
 int main() {
-    irqInit();
+	irqInit();
 	irqEnable(IRQ_VBLANK);
-	
-    REG_DISPCNT = MODE_3 | BG2_ENABLE;
+
+	REG_DISPCNT = MODE_3 | BG2_ENABLE;
 	REG_IME = 1;				
 
 	beginTitleScreeen();
@@ -58,5 +58,5 @@ int main() {
 		}
 	}
 
-    return 0;
+	return 0;
 }
